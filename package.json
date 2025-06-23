@@ -1,0 +1,23 @@
+{
+  "name": "csv-to-ics",
+  "version": "0.1.0",
+  "description": "Convert a csv spreadsheet to a calendar ics file",
+  "main": "dist/convert.js",
+  "type": "module",
+  "scripts": {
+    "start": "npm run build && node dist/convert.js",
+    "test": "test",
+    "build": "tsc"
+  },
+  "author": "Takeshi Kita (https://www.takeshi.cl)",
+  "license": "ISC",
+  "dependencies": {
+    "@touch4it/ical-timezones": "^1.9.0",
+    "csv-parser": "^3.2.0",
+    "ical-generator": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.3",
+    "typescript": "^5.8.3"
+  }
+}
