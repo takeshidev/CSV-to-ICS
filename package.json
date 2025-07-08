@@ -6,8 +6,13 @@
   "type": "module",
   "scripts": {
     "start": "npm run build && node dist/convert.js",
-    "test": "test",
+    "test": "jest",
     "build": "tsc"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    }
   },
   "author": "Takeshi Kita (https://www.takeshi.cl)",
   "license": "ISC",
@@ -17,7 +22,15 @@
     "ical-generator": "^9.0.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-typescript": "^7.27.1",
+    "@jest/globals": "^30.0.4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.0.3",
+    "babel-jest": "^30.0.4",
+    "jest": "^30.0.4",
+    "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
   }
 }

@@ -20,7 +20,7 @@ export interface CsvRow {
  * Returns an object with year, month (0-indexed), and day.
  * Throws an error if the format is invalid or parts are not valid numbers for a date.
  */
-function parseFlexibleDate(dateStr: string): { year: number; month: number; day: number } {
+export function parseFlexibleDate(dateStr: string): { year: number; month: number; day: number } {
   let match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/); // YYYY-MM-DD
   if (match) {
     const year = parseInt(match[1], 10);
