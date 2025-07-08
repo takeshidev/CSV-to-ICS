@@ -9,11 +9,6 @@
     "test": "jest --config src/jest.config.ts",
     "build": "tsc"
   },
-  "jest": {
-    "transform": {
-      "^.+\\.[t|j]sx?$": "babel-jest"
-    }
-  },
   "author": "Takeshi Kita (https://www.takeshi.cl)",
   "license": "ISC",
   "dependencies": {
