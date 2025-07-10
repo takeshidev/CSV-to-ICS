@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import { parseFlexibleDate } from "../events";
+import { parseFlexibleDate, validateTimezone } from "../events";
 
 describe("Testing parseFlexibleDate", () => {
   test("Accepts a valid YYYY-MM-DD date", () => {
@@ -50,5 +50,37 @@ describe("Testing parseFlexibleDate", () => {
       parseFlexibleDate(date);
     };
     expect(result2).toThrow(`Invalid month or day value in date: "${date}"`);
+  });
+});
+
+describe("Testing validateTimezone", () => {
+  test("Accepts a valid IANA Timezone", () => {
+    const result1 = () => {
+      validateTimezone("America/Santiago");
+    };
+    expect(result1).not.toThrow();
+
+    const result2 = () => {
+      validateTimezone("America/New_York");
+    };
+    expect(result2).not.toThrow();
+
+    const result3 = () => {
+      validateTimezone("America/Toronto");
+    };
+    expect(result3).not.toThrow();
+
+    const result4 = () => {
+      validateTimezone("America/Buenos_Aires");
+    };
+    expect(result4).not.toThrow();
+  });
+
+  test("Throws error when timezone is invalid", () => {
+    const timezone = "My time";
+    const result1 = () => {
+      validateTimezone(timezone);
+    };
+    expect(result1).toThrow(`The timezone "${timezone}" is not a valid IANA Time Zone identifier. Error: Invalid time zone specified: ${timezone}`);
   });
 });

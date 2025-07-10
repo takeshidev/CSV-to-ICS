@@ -72,7 +72,7 @@ export function parseFlexibleDate(dateStr: string): { year: number; month: numbe
   throw new Error(`Unsupported date format: "${dateStr}". Expected YYYY-MM-DD, MM/DD/YYYY, DD/MM/YYYY, or YYYY/MM/DD.`);
 }
 
-function validateTimezone(timezone: string): void {
+export function validateTimezone(timezone: string): void {
   try {
     new Intl.DateTimeFormat("en-US", { timeZone: timezone }).format(new Date());
   } catch (e: any) {
