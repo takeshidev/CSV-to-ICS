@@ -16,7 +16,7 @@ export interface CsvRow {
 }
 
 /**
- * Helper function to parse a date string flexibly (YYYY-MM-DD, MM/DD/YYYY, DD/MM/YYYY).
+ * Helper function to parse a date string flexibly (YYYY-MM-DD, MM/DD/YYYY, DD/MM/YYYY, YYYY/MM/DD).
  * Returns an object with year, month (0-indexed), and day.
  * Throws an error if the format is invalid or parts are not valid numbers for a date.
  */
@@ -26,6 +26,18 @@ export function parseFlexibleDate(dateStr: string): { year: number; month: numbe
     const year = parseInt(match[1], 10);
     const month = parseInt(match[2], 10) - 1; // Month is 0-indexed in Date constructor
     const day = parseInt(match[3], 10);
+    return { year, month, day };
+  }
+
+  match = dateStr.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/); // YYYY/MM/DD
+  if (match) {
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1;
+    const day = parseInt(match[3], 10);
+
+    if (month < 0 || month > 11 || day < 1 || day > 31) {
+      throw new Error(`Invalid month or day value in date: "${dateStr}"`);
+    }
     return { year, month, day };
   }
 
@@ -57,7 +69,7 @@ export function parseFlexibleDate(dateStr: string): { year: number; month: numbe
     return { year, month, day };
   }
 
-  throw new Error(`Unsupported date format: "${dateStr}". Expected YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY.`);
+  throw new Error(`Unsupported date format: "${dateStr}". Expected YYYY-MM-DD, MM/DD/YYYY, DD/MM/YYYY, or YYYY/MM/DD.`);
 }
 
 function validateTimezone(timezone: string): void {
