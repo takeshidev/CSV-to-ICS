@@ -80,7 +80,7 @@ export function validateTimezone(timezone: string): void {
   }
 }
 
-function setEventStart(startDateStr: string, startTimeStr: string, timezone?: string): Date {
+export function setEventStart(startDateStr: string, startTimeStr: string): Date {
   if (!startDateStr) {
     throw new Error("'Start Date' cannot be empty or null.");
   }
@@ -109,10 +109,6 @@ function setEventStart(startDateStr: string, startTimeStr: string, timezone?: st
     throw new Error(`Invalid time components in '${startTimeStr}'.`);
   }
 
-  if (timezone) {
-    validateTimezone(timezone);
-  }
-
   // Construct the Date object
   let proposedDate: Date;
   try {
@@ -127,17 +123,12 @@ function setEventStart(startDateStr: string, startTimeStr: string, timezone?: st
   return proposedDate;
 }
 
-function setEventEnd(endDateStr: string | undefined, endTimeStr: string | undefined, start: Date, duration?: string, timezone?: string): Date {
+export function setEventEnd(endDateStr: string | undefined, endTimeStr: string | undefined, start: Date, duration?: string): Date {
   if (!(start instanceof Date) || isNaN(start.getTime())) {
     throw new Error("The 'start' parameter must be a valid Date object.");
   }
 
-  if (timezone) {
-    validateTimezone(timezone);
-  }
-
   let endDateTime: Date;
-
   // Option A: Explicit End Date & Time Provided
   if (endDateStr && endTimeStr) {
     if (!timeRegex.test(endTimeStr)) {
@@ -201,6 +192,10 @@ export async function generateEvents(parsedCsv: CsvRow[], calendar: ICalCalendar
       const timezone = row["Time Zone"] || undefined;
       const start = setEventStart(row["Start Date"], row["Start Time"]);
       const end = setEventEnd(row["End Date"], row["End Time"], start, row.Duration);
+
+      if (timezone) {
+        validateTimezone(timezone);
+      }
 
       const event = new ICalEvent(
         {
