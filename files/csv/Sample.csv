@@ -1,16 +1,25 @@
 Subject,Start Date,Start Time,End Date,End Time,Time Zone,Description,UID,Category,Reminder Time
-Elite*Homestead,7/24/2025,18:45,7/24/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy01,W4P,0 minutes
-Elite*Iowa,7/31/2025,18:45,7/31/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy02,W4P,0 minutes
-Elite*Portland,8/14/2025,18:45,8/14/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy03,W4P,0 minutes
-Elite*Pocono,8/21/2025,18:45,8/21/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy04,W4P,0 minutes
-Elite*Indy 500 Open Test,9/4/2025,18:45,9/4/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy05,W4P,0 minutes
-Elite*Road America,9/18/2025,18:45,9/18/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy06,W4P,0 minutes
-Elite*Phoenix,9/25/2025,18:45,9/25/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy07,W4P,0 minutes
-Elite*Mexico City (TBA),10/2/2025,18:45,10/2/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy08,W4P,0 minutes
-Elite*Indy 500 Q,10/9/2025,18:45,10/9/2025,,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy09,W4P,0 minutes
-Elite*Carb Day,10/14/2025,18:45,10/14/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy10,W4P,0 minutes
-Elite*Indy 500,10/16/2025,18:45,10/16/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy11,W4P,0 minutes
-Elite*Texas(Twin 275s),10/30/2025,18:45,10/30/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy12,W4P,0 minutes
-Elite*Michigan,11/6/2025,18:45,11/6/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy13,W4P,0 minutes
-Elite*Mid-Ohio,11/13/2025,18:45,11/13/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy14,W4P,0 minutes
-Elite*Gateway,11/20/2025,18:45,11/20/2025,22:00,America/New_York,All races will take place on Thursdays. Practice begins at 6:45 pm ET and Qualifying will begin at 7:45 pm ET. ,Elite2025BIndy15,W4P,0 minutes
+Gran Premio de Australia,3/16/2025,01:00,3/16/2025,03:00,Australia/Melbourne,Carrera F1 2025,F12025AUS,F1,0
+Gran Premio de China,3/23/2025,04:00,3/23/2025,06:00,Asia/Shanghai,Carrera F1 2025,F12025CHN,F1,0
+Gran Premio de Japón,4/6/2025,02:00,4/6/2025,04:00,Asia/Tokyo,Carrera F1 2025,F12025JPN,F1,0
+Gran Premio de Bahréin,4/13/2025,08:00,4/13/2025,10:00,Asia/Bahrain,Carrera F1 2025,F12025BHR,F1,0
+Gran Premio de Arabia Saudita,4/20/2025,10:00,4/20/2025,12:00,Asia/Riyadh,Carrera F1 2025,F12025SAU,F1,0
+Gran Premio de Miami,5/4/2025,13:00,5/4/2025,15:00,America/New_York,Carrera F1 2025,F12025MIA,F1,0
+Gran Premio de Emilia Romagna,5/18/2025,06:00,5/18/2025,08:00,Europe/Rome,Carrera F1 2025,F12025EMR,F1,0
+Gran Premio de Mónaco,5/25/2025,06:00,5/25/2025,08:00,Europe/Monaco,Carrera F1 2025,F12025MCO,F1,0
+Gran Premio de España,6/1/2025,06:00,6/1/2025,08:00,Europe/Madrid,Carrera F1 2025,F12025ESP,F1,0
+Gran Premio de Canadá,6/15/2025,11:00,6/15/2025,13:00,America/Toronto,Carrera F1 2025,F12025CAN,F1,0
+Gran Premio de Austria,6/29/2025,06:00,6/29/2025,08:00,Europe/Vienna,Carrera F1 2025,F12025AUT,F1,0
+Gran Premio de Gran Bretaña,7/6/2025,07:00,7/6/2025,09:00,Europe/London,Carrera F1 2025,F12025GBR,F1,0
+Gran Premio de Bélgica,7/27/2025,06:00,7/27/2025,08:00,Europe/Brussels,Carrera F1 2025,F12025BEL,F1,0
+Gran Premio de Hungría,8/3/2025,06:00,8/3/2025,08:00,Europe/Budapest,Carrera F1 2025,F12025HUN,F1,0
+Gran Premio de Países Bajos,8/31/2025,06:00,8/31/2025,08:00,Europe/Amsterdam,Carrera F1 2025,F12025NED,F1,0
+Gran Premio de Italia,9/7/2025,06:00,9/7/2025,08:00,Europe/Rome,Carrera F1 2025,F12025ITA,F1,0
+Gran Premio de Azerbaiyán,9/21/2025,04:00,9/21/2025,06:00,Asia/Baku,Carrera F1 2025,F12025AZE,F1,0
+Gran Premio de Singapur,10/5/2025,05:00,10/5/2025,07:00,Asia/Singapore,Carrera F1 2025,F12025SGP,F1,0
+Gran Premio de Estados Unidos,10/19/2025,12:00,10/19/2025,14:00,America/Chicago,Carrera F1 2025,F12025USA,F1,0
+Gran Premio de México,10/26/2025,13:00,10/26/2025,15:00,America/Mexico_City,Carrera F1 2025,F12025MEX,F1,0
+Gran Premio de Brasil,11/9/2025,09:00,11/9/2025,11:00,America/Sao_Paulo,Carrera F1 2025,F12025BRA,F1,0
+Gran Premio de Las Vegas,11/22/2025,20:00,11/22/2025,22:00,America/Los_Angeles,Carrera F1 2025,F12025LVG,F1,0
+Gran Premio de Qatar,11/30/2025,08:00,11/30/2025,10:00,Asia/Qatar,Carrera F1 2025,F12025QAT,F1,0
+Gran Premio de Abu Dabi,12/7/2025,05:00,12/7/2025,07:00,Asia/Dubai,Carrera F1 2025,F12025ABU,F1,0

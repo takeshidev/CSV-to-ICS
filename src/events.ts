@@ -116,38 +116,14 @@ function setEventStart(startDateStr: string, startTimeStr: string, timezone?: st
   // Construct the Date object
   let proposedDate: Date;
   try {
-    let baseDate = new Date(year, month, day, hours, minutes, seconds); // Creates in local timezone by default
+    proposedDate = new Date(year, month, day, hours, minutes, seconds); // Creates in local timezone by default
 
-    if (isNaN(baseDate.getTime())) {
+    if (isNaN(proposedDate.getTime())) {
       throw new Error(`Date components form an invalid date (e.g., Feb 30th): ${startDateStr} ${startTimeStr}`);
-    }
-
-    if (timezone) {
-      const options: Intl.DateTimeFormatOptions = {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-        hourCycle: "h23",
-        timeZone: timezone,
-      };
-      const formatter = new Intl.DateTimeFormat("en-CA", options);
-      const formattedInTimezone = formatter.format(baseDate);
-
-      proposedDate = new Date(formattedInTimezone);
-
-      if (isNaN(proposedDate.getTime())) {
-        throw new Error(`Could not create a valid date in timezone "${timezone}" from components: "${startDateStr} ${startTimeStr}".`);
-      }
-    } else {
-      proposedDate = baseDate;
     }
   } catch (error: any) {
     throw new Error(`Error during date and time processing: ${error.message}`);
   }
-
   return proposedDate;
 }
 
@@ -185,34 +161,14 @@ function setEventEnd(endDateStr: string | undefined, endTimeStr: string | undefi
     }
 
     try {
-      let baseDate = new Date(year, month, day, hours, minutes, seconds);
+      endDateTime = new Date(year, month, day, hours, minutes, seconds);
 
-      if (isNaN(baseDate.getTime())) {
+      if (isNaN(endDateTime.getTime())) {
         throw new Error(`Date components form an invalid end date (e.g., Feb 30th): ${endDateStr} ${endTimeStr}`);
       }
 
-      if (timezone) {
-        const options: Intl.DateTimeFormatOptions = {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-          hour: "numeric",
-          minute: "numeric",
-          second: "numeric",
-          hourCycle: "h23",
-          timeZone: timezone,
-        };
-        const formatter = new Intl.DateTimeFormat("en-CA", options);
-        const formattedInTimezone = formatter.format(baseDate);
-        endDateTime = new Date(formattedInTimezone);
-      } else {
-        endDateTime = baseDate;
-      }
-
       if (isNaN(endDateTime.getTime())) {
-        throw new Error(
-          `Failed to create a valid End Date from components: "${endDateStr} ${endTimeStr}"${timezone ? ` in timezone "${timezone}"` : " in local timezone"}.`
-        );
+        throw new Error(`Failed to create a valid End Date from components: "${endDateStr} ${endTimeStr}"`);
       }
 
       if (endDateTime.getTime() < start.getTime()) {
@@ -243,8 +199,8 @@ export async function generateEvents(parsedCsv: CsvRow[], calendar: ICalCalendar
     const row = parsedCsv[i];
     try {
       const timezone = row["Time Zone"] || undefined;
-      const start = setEventStart(row["Start Date"], row["Start Time"], timezone);
-      const end = setEventEnd(row["End Date"], row["End Time"], start, row.Duration, timezone);
+      const start = setEventStart(row["Start Date"], row["Start Time"]);
+      const end = setEventEnd(row["End Date"], row["End Time"], start, row.Duration);
 
       const event = new ICalEvent(
         {
@@ -253,6 +209,7 @@ export async function generateEvents(parsedCsv: CsvRow[], calendar: ICalCalendar
           summary: row.Subject,
           description: row.Description,
           id: row.UID || undefined,
+          timezone: timezone,
         },
         calendar
       );
