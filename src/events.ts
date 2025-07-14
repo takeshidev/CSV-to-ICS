@@ -7,9 +7,8 @@ export interface CsvRow {
   "Start Date": string;
   "Start Time": string;
   "End Date": string;
-  "End Time": string;
+  "End Time": string; //  HH:MM, duration or "All day"
   "Time Zone": string;
-  Duration: string;
   Description: string;
   "Reminder Time": string;
   UID: string;
@@ -88,8 +87,23 @@ export function setEventStart(startDateStr: string, startTimeStr: string): Date 
     throw new Error("'Start Time' cannot be empty or null.");
   }
 
+  if (startTimeStr.toLowerCase() === "all day") {
+    let year: number, month: number, day: number;
+    try {
+      ({ year, month, day } = parseFlexibleDate(startDateStr));
+    } catch (e: any) {
+      throw new Error(`Error parsing 'Start Date' format for All Day event: ${e.message}`);
+    }
+
+    const date = new Date(year, month, day, 0, 0, 0); // Set to start of the day
+    if (isNaN(date.getTime())) {
+      throw new Error(`Date components form an invalid date for All Day event (e.g., Feb 30th): ${startDateStr}`);
+    }
+    return date;
+  }
+
   if (!timeRegex.test(startTimeStr)) {
-    throw new Error(`'Start Time' format is invalid: "${startTimeStr}". Expected HH:MM or HH:MM:SS.`);
+    throw new Error(`'Start Time' format is invalid: "${startTimeStr}". Expected HH:MM or HH:MM:SS, or "All day".`);
   }
 
   let year: number, month: number, day: number;
@@ -112,7 +126,7 @@ export function setEventStart(startDateStr: string, startTimeStr: string): Date 
   // Construct the Date object
   let proposedDate: Date;
   try {
-    proposedDate = new Date(year, month, day, hours, minutes, seconds); // Creates in local timezone by default
+    proposedDate = new Date(year, month, day, hours, minutes, seconds);
 
     if (isNaN(proposedDate.getTime())) {
       throw new Error(`Date components form an invalid date (e.g., Feb 30th): ${startDateStr} ${startTimeStr}`);
@@ -123,18 +137,20 @@ export function setEventStart(startDateStr: string, startTimeStr: string): Date 
   return proposedDate;
 }
 
-export function setEventEnd(endDateStr: string | undefined, endTimeStr: string | undefined, start: Date, duration?: string): Date {
+export function setEventEnd(endDateStr: string | undefined, endTimeStr: string | undefined, start: Date, isAllDayEvent: boolean): Date {
   if (!(start instanceof Date) || isNaN(start.getTime())) {
     throw new Error("The 'start' parameter must be a valid Date object.");
   }
 
   let endDateTime: Date;
-  // Option A: Explicit End Date & Time Provided
-  if (endDateStr && endTimeStr) {
-    if (!timeRegex.test(endTimeStr)) {
-      throw new Error(`Invalid 'endTimeStr' format: "${endTimeStr}". Expected HH:MM or HH:MM:SS.`);
-    }
 
+  if (isAllDayEvent) {
+    // For ical-generator, an all-day event that ends on the same day should have its 'end' set to the start of the next day.
+    const endOfToday = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 1, 0, 0, 0);
+    return endOfToday;
+  }
+
+  if (endDateStr && endTimeStr && timeRegex.test(endTimeStr)) {
     let year: number, month: number, day: number;
     try {
       ({ year, month, day } = parseFlexibleDate(endDateStr));
@@ -158,10 +174,6 @@ export function setEventEnd(endDateStr: string | undefined, endTimeStr: string |
         throw new Error(`Date components form an invalid end date (e.g., Feb 30th): ${endDateStr} ${endTimeStr}`);
       }
 
-      if (isNaN(endDateTime.getTime())) {
-        throw new Error(`Failed to create a valid End Date from components: "${endDateStr} ${endTimeStr}"`);
-      }
-
       if (endDateTime.getTime() < start.getTime()) {
         throw new Error("End date and time cannot be before the start date and time.");
       }
@@ -169,15 +181,17 @@ export function setEventEnd(endDateStr: string | undefined, endTimeStr: string |
       throw new Error(`Error processing explicit end date and time: ${error.message}`);
     }
   }
-  // Option B: Calculate End Date & Time using Duration
-  else if (duration) {
-    const durationMinutes = parseInt(duration, 10);
-    if (isNaN(durationMinutes) || durationMinutes < 0) {
-      throw new Error(`Invalid 'duration' value: "${duration}". Must be a non-negative number of minutes.`);
+  // If 'End Time' is not a valid time, but a duration number
+  else if (endDateStr && !isNaN(parseInt(endDateStr, 10))) {
+    const durationMinutes = parseInt(endDateStr, 10); // Usamos endDateStr como duración
+    if (durationMinutes < 0) {
+      throw new Error(`Invalid duration value from 'End Date' (${endDateStr}). Must be a non-negative number of minutes.`);
     }
     endDateTime = new Date(start.getTime() + durationMinutes * 60 * 1000);
   } else {
-    throw new Error("Either end date & time must be provided, or duration must be provided.");
+    const defaultDurationMinutes = 60;
+    endDateTime = new Date(start.getTime() + defaultDurationMinutes * 60 * 1000);
+    console.warn(`No explicit End Date/Time or valid duration found. Defaulting to ${defaultDurationMinutes} minutes for Subject starting at ${start.toLocaleString()}.`);
   }
 
   return endDateTime;
@@ -191,7 +205,8 @@ export async function generateEvents(parsedCsv: CsvRow[], calendar: ICalCalendar
     try {
       const timezone = row["Time Zone"] || undefined;
       const start = setEventStart(row["Start Date"], row["Start Time"]);
-      const end = setEventEnd(row["End Date"], row["End Time"], start, row.Duration);
+      const isAllDay = row["Start Time"].toLowerCase() === "all day" || row["End Time"].toLowerCase() === "all day";
+      const end = setEventEnd(row["End Date"], row["End Time"], start, isAllDay);
 
       if (timezone) {
         validateTimezone(timezone);
@@ -205,6 +220,7 @@ export async function generateEvents(parsedCsv: CsvRow[], calendar: ICalCalendar
           description: row.Description,
           id: row.UID || undefined,
           timezone: timezone,
+          allDay: isAllDay,
         },
         calendar
       );
