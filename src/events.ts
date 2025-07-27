@@ -127,27 +127,34 @@ export function setEventStart(startDateStr: string, startTimeStr: string): Date 
   let proposedDate: Date;
   try {
     proposedDate = new Date(year, month, day, hours, minutes, seconds);
-
-    if (isNaN(proposedDate.getTime())) {
-      throw new Error(`Date components form an invalid date (e.g., Feb 30th): ${startDateStr} ${startTimeStr}`);
-    }
   } catch (error: any) {
     throw new Error(`Error during date and time processing: ${error.message}`);
   }
   return proposedDate;
 }
 
-export function setEventEnd(endDateStr: string | undefined, endTimeStr: string | undefined, start: Date, isAllDayEvent: boolean): Date {
+export function setEventEnd(endDateStr: string, endTimeStr: string, start: Date, isAllDayEvent: boolean): Date {
   if (!(start instanceof Date) || isNaN(start.getTime())) {
     throw new Error("The 'start' parameter must be a valid Date object.");
   }
 
   let endDateTime: Date;
 
-  if (isAllDayEvent) {
-    // For ical-generator, an all-day event that ends on the same day should have its 'end' set to the start of the next day.
-    const endOfToday = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 1, 0, 0, 0);
-    return endOfToday;
+  // All day event, no explicit end date or time
+  if (isAllDayEvent && !endDateStr && !endTimeStr) {
+    return new Date(start.getFullYear(), start.getMonth(), start.getDate() + 1, 0, 0, 0); // Start of the next day
+  }
+
+  // All day, valid (?) date
+  if (isAllDayEvent && endDateStr) {
+    let year: number, month: number, day: number;
+    try {
+      ({ year, month, day } = parseFlexibleDate(endDateStr));
+    } catch (e: any) {
+      throw new Error(`Error parsing 'End Date' format: ${e.message}`);
+    }
+    const endOfEndDate = new Date(year, month, day + 1, 0, 0, 0); // For ical-generator, an all-day event that ends on the same day should have its 'end' set to the start of the next day.
+    return endOfEndDate;
   }
 
   if (endDateStr && endTimeStr && timeRegex.test(endTimeStr)) {
@@ -182,10 +189,12 @@ export function setEventEnd(endDateStr: string | undefined, endTimeStr: string |
     }
   }
   // If 'End Time' is not a valid time, but a duration number
-  else if (endDateStr && !isNaN(parseInt(endDateStr, 10))) {
-    const durationMinutes = parseInt(endDateStr, 10); // Usamos endDateStr como duración
+  else if (endTimeStr && !isNaN(parseInt(endTimeStr, 10))) {
+    const durationMinutes = parseInt(endTimeStr, 10);
+    console.warn(`Duration in minutes: ${durationMinutes}`);
+
     if (durationMinutes < 0) {
-      throw new Error(`Invalid duration value from 'End Date' (${endDateStr}). Must be a non-negative number of minutes.`);
+      throw new Error(`Invalid duration value from 'End Time' (${endTimeStr}). Must be a non-negative number of minutes.`);
     }
     endDateTime = new Date(start.getTime() + durationMinutes * 60 * 1000);
   } else {
