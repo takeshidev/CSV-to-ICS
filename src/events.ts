@@ -79,22 +79,20 @@ export function validateTimezone(timezone: string): void {
   }
 }
 
-export function setEventStart(startDateStr: string, startTimeStr: string): Date {
+export function setEventStart(startDateStr: string, startTimeStr: string, isAllDay: Boolean): Date {
+  //Validate start date
   if (!startDateStr) {
     throw new Error("'Start Date' cannot be empty or null.");
   }
-  if (!startTimeStr) {
-    throw new Error("'Start Time' cannot be empty or null.");
+  let year: number, month: number, day: number;
+  try {
+    ({ year, month, day } = parseFlexibleDate(startDateStr));
+  } catch (e: any) {
+    throw new Error(`Error parsing 'Start Date' format: ${e.message}`);
   }
 
-  if (startTimeStr.toLowerCase() === "all day") {
-    let year: number, month: number, day: number;
-    try {
-      ({ year, month, day } = parseFlexibleDate(startDateStr));
-    } catch (e: any) {
-      throw new Error(`Error parsing 'Start Date' format for All Day event: ${e.message}`);
-    }
-
+  // Validate if is All day event
+  if (isAllDay) {
     const date = new Date(year, month, day, 0, 0, 0); // Set to start of the day
     if (isNaN(date.getTime())) {
       throw new Error(`Date components form an invalid date for All Day event (e.g., Feb 30th): ${startDateStr}`);
@@ -105,14 +103,6 @@ export function setEventStart(startDateStr: string, startTimeStr: string): Date 
   if (!timeRegex.test(startTimeStr)) {
     throw new Error(`'Start Time' format is invalid: "${startTimeStr}". Expected HH:MM or HH:MM:SS, or "All day".`);
   }
-
-  let year: number, month: number, day: number;
-  try {
-    ({ year, month, day } = parseFlexibleDate(startDateStr));
-  } catch (e: any) {
-    throw new Error(`Error parsing 'Start Date' format: ${e.message}`);
-  }
-
   // Parse time components
   const [hoursStr, minutesStr, secondsStr = "00"] = startTimeStr.split(":");
   const hours = parseInt(hoursStr, 10);
@@ -213,8 +203,8 @@ export async function generateEvents(parsedCsv: CsvRow[], calendar: ICalCalendar
     const row = parsedCsv[i];
     try {
       const timezone = row["Time Zone"] || undefined;
-      const start = setEventStart(row["Start Date"], row["Start Time"]);
       const isAllDay = row["Start Time"].toLowerCase() === "all day" || row["End Time"].toLowerCase() === "all day";
+      const start = setEventStart(row["Start Date"], row["Start Time"], isAllDay);
       const end = setEventEnd(row["End Date"], row["End Time"], start, isAllDay);
 
       if (timezone) {

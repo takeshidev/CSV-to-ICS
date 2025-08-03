@@ -108,7 +108,7 @@ describe("Testing setEventStart", () => {
   };
 
   test("should set event start with HH:MM time correctly", () => {
-    const start = setEventStart("2025-07-15", "10:30");
+    const start = setEventStart("2025-07-15", "10:30", false);
     const expected = createExpectedDate(2025, 7, 15, 10, 30, 0);
     expect(start.toString()).toBe(expected.toString());
     expect(start.getFullYear()).toBe(2025);
@@ -120,7 +120,7 @@ describe("Testing setEventStart", () => {
   });
 
   test("should set event start with HH:MM:SS time correctly", () => {
-    const start = setEventStart("2025/12/25", "23:59:05");
+    const start = setEventStart("2025/12/25", "23:59:05", false);
     const expected = createExpectedDate(2025, 12, 25, 23, 59, 5);
     expect(start.toString()).toBe(expected.toString());
     expect(start.getFullYear()).toBe(2025);
@@ -132,7 +132,7 @@ describe("Testing setEventStart", () => {
   });
 
   test("should handle 'All day' start time correctly", () => {
-    const start = setEventStart("2025-08-01", "All day");
+    const start = setEventStart("2025-08-01", "", true);
     const expected = createExpectedDate(2025, 8, 1, 0, 0, 0);
     expect(start.toString()).toBe(expected.toString());
     expect(start.getHours()).toBe(0);
@@ -141,18 +141,14 @@ describe("Testing setEventStart", () => {
   });
 
   test("should throw error for empty start date", () => {
-    expect(() => setEventStart("", "10:00")).toThrow("'Start Date' cannot be empty or null.");
-  });
-
-  test("should throw error for empty start time", () => {
-    expect(() => setEventStart("2025-01-01", "")).toThrow("'Start Time' cannot be empty or null.");
+    expect(() => setEventStart("", "10:00", false)).toThrow("'Start Date' cannot be empty or null.");
   });
 
   test("should throw error for invalid time format", () => {
-    expect(() => setEventStart("2025-01-01", "10")).toThrow("'Start Time' format is invalid");
-    expect(() => setEventStart("2025-01-01", "10:3")).toThrow("'Start Time' format is invalid");
-    expect(() => setEventStart("2025-01-01", "25:00")).toThrow("Invalid time components in '25:00'");
-    expect(() => setEventStart("2025-01-01", "10:65")).toThrow("Invalid time components in '10:65'");
+    expect(() => setEventStart("2025-01-01", "10", false)).toThrow("'Start Time' format is invalid");
+    expect(() => setEventStart("2025-01-01", "10:3", false)).toThrow("'Start Time' format is invalid");
+    expect(() => setEventStart("2025-01-01", "25:00", false)).toThrow("Invalid time components in '25:00'");
+    expect(() => setEventStart("2025-01-01", "10:65", false)).toThrow("Invalid time components in '10:65'");
   });
 });
 
@@ -257,8 +253,6 @@ describe("Testing setEventEnd", () => {
   });
 
   test("should throw error for invalid explicit end time format", () => {
-    console.log("==========================");
-
     let result = setEventEnd("2025-07-15", "invalid-time", startDate, false);
     console.log(`Testing invalid end time: ${result}`); // Wed Jul 16 2025 18:45:00 GMT-0400 (Chile Standard Time)
     console.log("==========================");
