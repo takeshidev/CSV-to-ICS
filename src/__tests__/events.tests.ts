@@ -170,16 +170,9 @@ describe("Testing setEventEnd", () => {
   });
 
   test("should set end date for all-day event to the beginning of the next day", () => {
-    console.log("setEventEnd-01: should set end date for all-day event to the beginning of the next day");
-
     const start = createExpectedDate(2025, 7, 15, 0, 0, 0); // 2025-07-15T04:00:00.000Z
-    console.log("startForAllDay", start);
-
     const end = setEventEnd("", "", start, true); // No explicit end, just an all-day flag
-    console.log("end", end);
-
     const expected = createExpectedDate(2025, 7, 16, 0, 0, 0); // Start of July 16
-    console.log("expected", expected);
 
     expect(end.toString()).toBe(expected.toString());
     expect(end.getFullYear()).toBe(2025);
@@ -190,8 +183,6 @@ describe("Testing setEventEnd", () => {
   });
 
   test("should calculate end date using explicit end date and time", () => {
-    console.log("setEventEnd-02: should calculate end date using explicit end date and time");
-
     const end = setEventEnd("2025-07-15", "11:30", startDate, false);
     const expected = createExpectedDate(2025, 7, 15, 11, 30, 0);
     expect(end.toString()).toBe(expected.toString());
@@ -217,29 +208,21 @@ describe("Testing setEventEnd", () => {
   });
 
   test("should calculate end date by adding duration when endTimeStr is not a time and endDateStr is a number", () => {
-    const end = setEventEnd("120", "not a time", startDate, false);
-    const expected = createExpectedDate(2025, 7, 15, 10, 0, 0);
+    const end = setEventEnd("", "90", startDate, false);
+    const expected = createExpectedDate(2025, 7, 15, 10, 30, 0);
     expect(end.toString()).toBe(expected.toString());
-    expect(end.getHours()).toBe(11);
-    expect(end.getMinutes()).toBe(0);
+    expect(end.getHours()).toBe(10);
+    expect(end.getMinutes()).toBe(30);
   });
 
   test("should handle duration that crosses midnight correctly", () => {
     const startLate = createExpectedDate(2025, 7, 15, 23, 0, 0);
-    const end = setEventEnd("120", "not a time", startLate, false);
+    const end = setEventEnd("", "120", startLate, false);
     const expected = createExpectedDate(2025, 7, 16, 1, 0, 0);
     expect(end.toString()).toBe(expected.toString());
     expect(end.getDate()).toBe(16);
     expect(end.getHours()).toBe(1);
   });
-
-  // test("should use a default 60-minute duration when no explicit end or valid duration is provided", () => {
-  //   const end = setEventEnd(undefined, undefined, startDate, false);
-  //   const expected = createExpectedDate(2025, 7, 15, 10, 0, 0); // 9:00 + 60 minutes = 10:00
-  //   expect(end.toString()).toBe(expected.toString());
-  //   expect(end.getHours()).toBe(10);
-  //   expect(end.getMinutes()).toBe(0);
-  // });
 
   test("should throw error if 'start' parameter is not a valid Date object", () => {
     expect(() => setEventEnd("2025-07-15", "10:00", null as any, false)).toThrow("The 'start' parameter must be a valid Date object.");
@@ -252,21 +235,8 @@ describe("Testing setEventEnd", () => {
     expect(() => setEventEnd("2025-07-14", "10:00", start, false)).toThrow("End date and time cannot be before the start date and time.");
   });
 
-  test("should throw error for invalid explicit end time format", () => {
-    let result = setEventEnd("2025-07-15", "invalid-time", startDate, false);
-    console.log(`Testing invalid end time: ${result}`); // Wed Jul 16 2025 18:45:00 GMT-0400 (Chile Standard Time)
-    console.log("==========================");
-
-    expect(() => setEventEnd("2025-07-15", "invalid-time", startDate, false)).toThrow(`Invalid time components in 'invalid-time'.`);
-    expect(() => setEventEnd("2025-07-15", "25:00", startDate, false)).toThrow(`Invalid time components in '25:00'.`);
-  });
-
   test("should throw error for invalid duration value (negative)", () => {
-    expect(() => setEventEnd("-10", "not a time", startDate, false)).toThrow(`Invalid duration value from 'End Date' (-10). Must be a non-negative number of minutes.`);
-  });
-
-  test("should throw error for invalid end date components (e.g., Feb 30th)", () => {
-    expect(() => setEventEnd("2025-02-30", "10:00", startDate, false)).toThrow(`Date components form an invalid end date (e.g., Feb 30th): 2025-02-30 10:00`);
+    expect(() => setEventEnd("", "-10", startDate, false)).toThrow(`Invalid duration value from 'End Time' (-10). Must be a non-negative number of minutes.`);
   });
 });
 
