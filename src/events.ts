@@ -100,10 +100,10 @@ export function setEventStart(startDateStr: string, startTimeStr: string, isAllD
     return date;
   }
 
+  // Parse time components
   if (!timeRegex.test(startTimeStr)) {
     throw new Error(`'Start Time' format is invalid: "${startTimeStr}". Expected HH:MM or HH:MM:SS, or "All day".`);
   }
-  // Parse time components
   const [hoursStr, minutesStr, secondsStr = "00"] = startTimeStr.split(":");
   const hours = parseInt(hoursStr, 10);
   const minutes = parseInt(minutesStr, 10);
@@ -135,31 +135,31 @@ export function setEventEnd(endDateStr: string, endTimeStr: string, start: Date,
     return new Date(start.getFullYear(), start.getMonth(), start.getDate() + 1, 0, 0, 0); // Start of the next day
   }
 
-  // All day, valid (?) date
-  if (isAllDayEvent && endDateStr) {
-    let year: number, month: number, day: number;
+  // Parse valid date
+  let year: number, month: number, day: number;
+
+  if (endDateStr.trim() === "" && endTimeStr) {
+    year = start.getFullYear();
+    month = start.getMonth();
+    day = start.getDate();
+  } else {
     try {
       ({ year, month, day } = parseFlexibleDate(endDateStr));
     } catch (e: any) {
       throw new Error(`Error parsing 'End Date' format: ${e.message}`);
     }
-    const endOfEndDate = new Date(year, month, day + 1, 0, 0, 0); // For ical-generator, an all-day event that ends on the same day should have its 'end' set to the start of the next day.
-    return endOfEndDate;
+  }
+  // All day, valid  date
+  if (isAllDayEvent && endDateStr) {
+    return new Date(year, month, day + 1, 0, 0, 0); // Start of the input day +1;
   }
 
-  if (endDateStr && endTimeStr && timeRegex.test(endTimeStr)) {
-    let year: number, month: number, day: number;
-    try {
-      ({ year, month, day } = parseFlexibleDate(endDateStr));
-    } catch (e: any) {
-      throw new Error(`Error parsing 'End Date' format: ${e.message}`);
-    }
-
+  // Specific end date and time
+  if (endTimeStr && timeRegex.test(endTimeStr)) {
     const [hoursStr, minutesStr, secondsStr = "00"] = endTimeStr.split(":");
     const hours = parseInt(hoursStr, 10);
     const minutes = parseInt(minutesStr, 10);
     const seconds = parseInt(secondsStr, 10);
-
     if (isNaN(hours) || hours < 0 || hours > 23 || isNaN(minutes) || minutes < 0 || minutes > 59 || isNaN(seconds) || seconds < 0 || seconds > 59) {
       throw new Error(`Invalid time components in '${endTimeStr}'.`);
     }
@@ -178,11 +178,25 @@ export function setEventEnd(endDateStr: string, endTimeStr: string, start: Date,
       throw new Error(`Error processing explicit end date and time: ${error.message}`);
     }
   }
-  // If 'End Time' is not a valid time, but a duration number
-  else if (endTimeStr && !isNaN(parseInt(endTimeStr, 10))) {
-    const durationMinutes = parseInt(endTimeStr, 10);
-    console.warn(`Duration in minutes: ${durationMinutes}`);
+  // specific end date, no time
+  else if (endDateStr && !timeRegex.test(endTimeStr)) {
+    const durationMinutes = parseInt(endTimeStr, 10) || 0;
+    if (durationMinutes < 0) {
+      throw new Error(`Invalid duration value from 'End Time' (${endTimeStr}). Must be a non-negative number of minutes.`);
+    }
 
+    try {
+      endDateTime = new Date(year, month, day, 0, durationMinutes, 0);
+      if (endDateTime.getTime() < start.getTime()) {
+        throw new Error("End date and time cannot be before the start date and time.");
+      }
+    } catch (error: any) {
+      throw new Error(`Error processing end date without time: ${error.message}`);
+    }
+  }
+  // If 'End Time' is not a valid time, but a duration number
+  else if (!endDateStr && endTimeStr && !timeRegex.test(endTimeStr)) {
+    const durationMinutes = parseInt(endTimeStr, 10);
     if (durationMinutes < 0) {
       throw new Error(`Invalid duration value from 'End Time' (${endTimeStr}). Must be a non-negative number of minutes.`);
     }
@@ -203,7 +217,7 @@ export async function generateEvents(parsedCsv: CsvRow[], calendar: ICalCalendar
     const row = parsedCsv[i];
     try {
       const timezone = row["Time Zone"] || undefined;
-      const isAllDay = row["Start Time"].toLowerCase() === "all day" || row["End Time"].toLowerCase() === "all day";
+      const isAllDay = row["Start Time"].toLowerCase() === "all day" || row["Start Time"].trim() === "" || row["End Time"].toLowerCase() === "all day";
       const start = setEventStart(row["Start Date"], row["Start Time"], isAllDay);
       const end = setEventEnd(row["End Date"], row["End Time"], start, isAllDay);
 
