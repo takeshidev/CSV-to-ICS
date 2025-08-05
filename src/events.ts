@@ -1,4 +1,4 @@
-import { ICalCalendar, ICalEvent } from "ical-generator";
+import { ICalAlarmType, ICalCalendar, ICalEvent } from "ical-generator";
 
 const timeRegex = /^\d{2}:\d{2}(:\d{2})?$/; // HH:MM or HH:MM:SS
 
@@ -14,7 +14,6 @@ export interface CsvRow {
   UID: string;
   Categories?: string;
   Location?: string;
-  Status?: string;
   Url?: string;
   Alarms?: string;
 }
@@ -230,6 +229,12 @@ export async function generateEvents(parsedCsv: CsvRow[], calendar: ICalCalendar
             return { name: cat };
           })
         : undefined;
+      const alarms = row.Alarms
+        ? row.Alarms.split(" ").map((alarm) => {
+            return { type: ICalAlarmType.display, trigger: parseInt(alarm) * 60 };
+          })
+        : undefined;
+
       if (timezone) {
         validateTimezone(timezone);
       }
@@ -240,12 +245,13 @@ export async function generateEvents(parsedCsv: CsvRow[], calendar: ICalCalendar
           end: end,
           summary: row.Subject,
           description: row.Description,
-          id: row.UID || undefined,
+          id: row.UID,
           timezone: timezone,
           allDay: isAllDay,
           categories: categories,
           location: row.Location,
           url: row.Url,
+          alarms: alarms,
         },
         calendar
       );
