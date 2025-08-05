@@ -12,6 +12,11 @@ export interface CsvRow {
   Description: string;
   "Reminder Time": string;
   UID: string;
+  Categories?: string;
+  Location?: string;
+  Status?: string;
+  Url?: string;
+  Alarms?: string;
 }
 
 /**
@@ -220,7 +225,11 @@ export async function generateEvents(parsedCsv: CsvRow[], calendar: ICalCalendar
       const isAllDay = row["Start Time"].toLowerCase() === "all day" || row["Start Time"].trim() === "" || row["End Time"].toLowerCase() === "all day";
       const start = setEventStart(row["Start Date"], row["Start Time"], isAllDay);
       const end = setEventEnd(row["End Date"], row["End Time"], start, isAllDay);
-
+      const categories = row.Categories
+        ? row.Categories.split(" ").map((cat) => {
+            return { name: cat };
+          })
+        : undefined;
       if (timezone) {
         validateTimezone(timezone);
       }
@@ -234,6 +243,9 @@ export async function generateEvents(parsedCsv: CsvRow[], calendar: ICalCalendar
           id: row.UID || undefined,
           timezone: timezone,
           allDay: isAllDay,
+          categories: categories,
+          location: row.Location,
+          url: row.Url,
         },
         calendar
       );
