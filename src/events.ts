@@ -142,7 +142,7 @@ export function setEventEnd(endDateStr: string, endTimeStr: string, start: Date,
   // Parse valid date
   let year: number, month: number, day: number;
 
-  if (endDateStr.trim() === "" && endTimeStr) {
+  if ((endDateStr || "").trim() === "" && endTimeStr) {
     year = start.getFullYear();
     month = start.getMonth();
     day = start.getDate();
@@ -221,7 +221,7 @@ export async function generateEvents(parsedCsv: CsvRow[], calendar: ICalCalendar
     const row = parsedCsv[i];
     try {
       const timezone = row["Time Zone"] || undefined;
-      const isAllDay = row["Start Time"].toLowerCase() === "all day" || row["Start Time"].trim() === "" || row["End Time"].toLowerCase() === "all day";
+      const isAllDay = row["Start Time"].toLowerCase() === "all day" || row["Start Time"].trim() === "" || (row["End Time"] || "").toLowerCase() === "all day";
       const start = setEventStart(row["Start Date"], row["Start Time"], isAllDay);
       const end = setEventEnd(row["End Date"], row["End Time"], start, isAllDay);
       const categories = row.Categories
