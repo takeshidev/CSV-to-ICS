@@ -1,6 +1,8 @@
 # CSV to ICS
 
 Convert a .csv spreadsheet to .ics calendar file
+<img width="2000" height="875" alt="image" src="https://github.com/user-attachments/assets/1a48bd3b-8e04-4826-8115-556dd249564d" />
+
 
 ## Features
 
